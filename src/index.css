@@ -1,0 +1,445 @@
+@import "tailwindcss";
+
+/* Tailwind v4, CSS-first: tokens, utilities and keyframes are defined HERE.
+   A tailwind.config.* is never executed, and @config, @plugin and CSS @import of an npm
+   package all fail — the import above is the only package import that resolves.
+   A --font-* token names a font, it does not load one: add an @font-face or a stylesheet
+   link in index.html, or the stack silently falls through to the next family. */
+
+/* Bind the dark: variant to the .dark class that ThemeProvider puts on <html>. Without this,
+   Tailwind v4 defaults dark: to prefers-color-scheme, which would drift from the palette below
+   and from chart.tsx's .dark selector. Palette and utilities must switch on the same signal. */
+@custom-variant dark (&:is(.dark *));
+
+/* Every token here maps to a raw variable rather than a literal colour. `inline` substitutes the
+   MAPPING (var(--background)) into each utility, so .bg-background emits var(--background) and
+   re-resolves whenever :root/.dark changes it. Putting literals here instead bakes the light value
+   into the utility and makes dark mode impossible — utilities stop referencing the variable at all. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+
+  /* "Inter" was listed here for a year while nothing ever loaded it, so every app silently
+     rendered the next family in the stack. Name a font here only once it is actually loaded. */
+ --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-display: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-caret-blink: caret-blink 1.25s ease-out infinite;
+}
+
+@property --tw-enter-opacity {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --tw-enter-scale {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --tw-enter-rotate {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tw-enter-translate-x {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tw-enter-translate-y {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tw-exit-opacity {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --tw-exit-scale {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --tw-exit-rotate {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tw-exit-translate-x {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tw-exit-translate-y {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@keyframes caret-blink {
+  0%,
+  70%,
+  100% {
+    opacity: 1;
+  }
+  20%,
+  50% {
+    opacity: 0;
+  }
+}
+
+/* These animate the INDIVIDUAL translate/scale/rotate properties, never the `transform`
+   shorthand. Tailwind v4 compiles `translate-x-[-50%]` to `translate: -50% -50%` (an
+   independent property), not to `transform`. A keyframe writing `transform` would therefore
+   COMPOSE with that centering rather than override it: a dialog centered at -50%/-50% and
+   entering from `slide-in-from-top-[48%]` would start at -98% vertically and fly in from
+   most of a screen away. Animating `translate` directly overrides the static value for the
+   duration, which is what the v3 plugin achieved via `transform` and what the 48%/50%
+   pairing in dialog.tsx assumes — a 2% slide.
+   If you reintroduce `transform` here, dialogs, alert-dialogs, sheets and popovers all break. */
+@keyframes enter {
+  from {
+    opacity: var(--tw-enter-opacity, 1);
+    translate: var(--tw-enter-translate-x, 0) var(--tw-enter-translate-y, 0);
+    scale: var(--tw-enter-scale, 1);
+    rotate: var(--tw-enter-rotate, 0);
+  }
+}
+
+@keyframes exit {
+  to {
+    opacity: var(--tw-exit-opacity, 1);
+    translate: var(--tw-exit-translate-x, 0) var(--tw-exit-translate-y, 0);
+    scale: var(--tw-exit-scale, 1);
+    rotate: var(--tw-exit-rotate, 0);
+  }
+}
+
+@utility animate-in {
+  animation-name: enter;
+  animation-duration: var(--tw-duration, 150ms);
+  animation-timing-function: var(--tw-ease, ease);
+}
+
+@utility animate-out {
+  animation-name: exit;
+  animation-duration: var(--tw-duration, 150ms);
+  animation-timing-function: var(--tw-ease, ease);
+  animation-fill-mode: forwards;
+}
+
+@utility fade-in {
+  --tw-enter-opacity: 0;
+}
+
+@utility fade-in-* {
+  --tw-enter-opacity: calc(--value(number) / 100);
+}
+
+@utility fade-out {
+  --tw-exit-opacity: 0;
+}
+
+@utility fade-out-* {
+  --tw-exit-opacity: calc(--value(number) / 100);
+}
+
+@utility zoom-in-* {
+  --tw-enter-scale: calc(--value(number) / 100);
+}
+
+@utility zoom-out-* {
+  --tw-exit-scale: calc(--value(number) / 100);
+}
+
+@utility slide-in-from-top {
+  --tw-enter-translate-y: -100%;
+}
+
+@utility slide-in-from-top-* {
+  --tw-enter-translate-y: calc(-1 * --spacing(--value(number)));
+  --tw-enter-translate-y: calc(-100% * --value(ratio));
+  --tw-enter-translate-y: calc(-1 * --value([percentage]));
+}
+
+@utility slide-in-from-bottom {
+  --tw-enter-translate-y: 100%;
+}
+
+@utility slide-in-from-bottom-* {
+  --tw-enter-translate-y: --spacing(--value(number));
+  --tw-enter-translate-y: calc(100% * --value(ratio));
+  --tw-enter-translate-y: --value([percentage]);
+}
+
+@utility slide-in-from-left {
+  --tw-enter-translate-x: -100%;
+}
+
+@utility slide-in-from-left-* {
+  --tw-enter-translate-x: calc(-1 * --spacing(--value(number)));
+  --tw-enter-translate-x: calc(-100% * --value(ratio));
+  --tw-enter-translate-x: calc(-1 * --value([percentage]));
+}
+
+@utility slide-in-from-right {
+  --tw-enter-translate-x: 100%;
+}
+
+@utility slide-in-from-right-* {
+  --tw-enter-translate-x: --spacing(--value(number));
+  --tw-enter-translate-x: calc(100% * --value(ratio));
+  --tw-enter-translate-x: --value([percentage]);
+}
+
+@utility slide-out-to-top {
+  --tw-exit-translate-y: -100%;
+}
+
+@utility slide-out-to-top-* {
+  --tw-exit-translate-y: calc(-1 * --spacing(--value(number)));
+  --tw-exit-translate-y: calc(-100% * --value(ratio));
+  --tw-exit-translate-y: calc(-1 * --value([percentage]));
+}
+
+@utility slide-out-to-bottom {
+  --tw-exit-translate-y: 100%;
+}
+
+@utility slide-out-to-bottom-* {
+  --tw-exit-translate-y: --spacing(--value(number));
+  --tw-exit-translate-y: calc(100% * --value(ratio));
+  --tw-exit-translate-y: --value([percentage]);
+}
+
+@utility slide-out-to-left {
+  --tw-exit-translate-x: -100%;
+}
+
+@utility slide-out-to-left-* {
+  --tw-exit-translate-x: calc(-1 * --spacing(--value(number)));
+  --tw-exit-translate-x: calc(-100% * --value(ratio));
+  --tw-exit-translate-x: calc(-1 * --value([percentage]));
+}
+
+@utility slide-out-to-right {
+  --tw-exit-translate-x: 100%;
+}
+
+@utility slide-out-to-right-* {
+  --tw-exit-translate-x: --spacing(--value(number));
+  --tw-exit-translate-x: calc(100% * --value(ratio));
+  --tw-exit-translate-x: --value([percentage]);
+}
+
+/* These are consumed directly by the utilities, so each must be a COMPLETE colour —
+   hsl(...), oklch(...) or #hex. Bare HSL channels (`0 0% 100%`) are the shadcn v3 shape and
+   produce invalid values here, because nothing wraps them in hsl(). A new semantic token
+   needs three things: the raw value here, a --color-* mapping above, and a .dark value. */
+:root {
+  --radius: 0.5rem;
+
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(222.2 84% 4.9%);
+
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(222.2 84% 4.9%);
+
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(222.2 84% 4.9%);
+
+  --primary: hsl(222.2 47.4% 11.2%);
+  --primary-foreground: hsl(210 40% 98%);
+
+  --secondary: hsl(210 40% 96.1%);
+  --secondary-foreground: hsl(222.2 47.4% 11.2%);
+
+  --muted: hsl(210 40% 96.1%);
+  --muted-foreground: hsl(215.4 16.3% 46.9%);
+
+  --accent: hsl(210 40% 96.1%);
+  --accent-foreground: hsl(222.2 47.4% 11.2%);
+
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(210 40% 98%);
+
+  --border: hsl(214.3 31.8% 91.4%);
+  --input: hsl(214.3 31.8% 91.4%);
+  --ring: hsl(222.2 84% 4.9%);
+
+  --sidebar: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5.3% 26.1%);
+  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(240 4.8% 95.9%);
+  --sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+.dark {
+  --background: hsl(222.2 84% 4.9%);
+  --foreground: hsl(210 40% 98%);
+
+  --card: hsl(222.2 84% 4.9%);
+  --card-foreground: hsl(210 40% 98%);
+
+  --popover: hsl(222.2 84% 4.9%);
+  --popover-foreground: hsl(210 40% 98%);
+
+  --primary: hsl(210 40% 98%);
+  --primary-foreground: hsl(222.2 47.4% 11.2%);
+
+  --secondary: hsl(217.2 32.6% 17.5%);
+  --secondary-foreground: hsl(210 40% 98%);
+
+  --muted: hsl(217.2 32.6% 17.5%);
+  --muted-foreground: hsl(215 20.2% 65.1%);
+
+  --accent: hsl(217.2 32.6% 17.5%);
+  --accent-foreground: hsl(210 40% 98%);
+
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(210 40% 98%);
+
+  --border: hsl(217.2 32.6% 17.5%);
+  --input: hsl(217.2 32.6% 17.5%);
+  --ring: hsl(212.7 26.8% 83.9%);
+
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Tailwind's preflight leaves interactive controls on the UA default cursor, so a
+     button gives no hover affordance and reads as dead. Anchors already get pointer
+     from the UA and are left alone; cursor-* utilities still override, being a later layer. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled):not([aria-disabled="true"]),
+  summary,
+  select:not(:disabled),
+  input:not(:disabled):is([type="checkbox"], [type="radio"], [type="submit"], [type="button"], [type="reset"]) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  select:disabled,
+  [role="button"][aria-disabled="true"],
+  input:disabled:is([type="checkbox"], [type="radio"], [type="submit"], [type="button"], [type="reset"]) {
+    cursor: not-allowed;
+  }
+}
+
+/* Discord-inspired dark palette. Declared after the base .dark block so these win. */
+.dark {
+  --background: hsl(223 7% 12%);
+  --foreground: hsl(220 13% 92%);
+
+  --card: hsl(220 7% 16%);
+  --card-foreground: hsl(220 13% 92%);
+
+  --popover: hsl(220 8% 14%);
+  --popover-foreground: hsl(220 13% 92%);
+
+  --primary: hsl(235 86% 65%);
+  --primary-foreground: hsl(0 0% 100%);
+
+  --secondary: hsl(220 7% 20%);
+  --secondary-foreground: hsl(220 13% 92%);
+
+  --muted: hsl(220 7% 20%);
+  --muted-foreground: hsl(218 8% 62%);
+
+  --accent: hsl(220 7% 22%);
+  --accent-foreground: hsl(220 13% 92%);
+
+  --destructive: hsl(359 68% 55%);
+  --destructive-foreground: hsl(0 0% 100%);
+
+  --border: hsl(220 7% 24%);
+  --input: hsl(220 8% 10%);
+  --ring: hsl(235 86% 65%);
+}
