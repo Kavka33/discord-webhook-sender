@@ -16,10 +16,12 @@ const RequestReset = () => {
     e.preventDefault();
     setBusy(true);
     try {
-      await auth.requestPasswordReset(email);
-      toast.success("Password reset email sent");
+      const result = await auth.requestPasswordReset(email);
+      console.log("Password reset requested:", result);
+      toast.success("Password reset email sent (if email exists)");
       setEmail("");
     } catch (err) {
+      console.error("Password reset error:", err);
       toast.error(err instanceof Error ? err.message : "Could not request reset");
     } finally {
       setBusy(false);
@@ -56,6 +58,9 @@ const RequestReset = () => {
                 {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Send reset link
               </Button>
+              <p className="mt-2 text-center text-xs text-muted-foreground">
+                Check your inbox for the reset email
+              </p>
             </form>
           </CardContent>
         </Card>
