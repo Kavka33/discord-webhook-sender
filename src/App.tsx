@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SessionProvider } from "@/hooks/use-session";
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
+import AdminPublic from "./pages/AdminPublic";
 import ResetPassword from "./pages/ResetPassword";
 import RequestReset from "./pages/RequestReset";
 import NotFound from "./pages/NotFound";
@@ -24,6 +25,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/admin-public" element={<AdminPublic />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/forgot-password" element={<RequestReset />} />
               <Route path="*" element={<NotFound />} />
